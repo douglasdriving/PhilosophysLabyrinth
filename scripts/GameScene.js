@@ -1,12 +1,42 @@
 //GameScene.js
 const playerScale = 0.5;
 const wallsScale = 0.5;
+const enemyScale = 0.5;
 const canvasWidth = 1024;
 const canvasHeight = 768;
 
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: 'GameScene' });
+  }
+
+  create() {
+
+    //player
+    this.createPlayer();
+
+    // Create walls
+    this.createWalls();
+
+    // Create enemies
+    this.createEnemies();
+
+    // Create projectiles
+    this.projectiles = [];
+
+    // Define cursor keys for movement
+    this.cursors = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+    this.input.on('pointerdown', this.handleShoot, this);
+  }
+
+  update() {
+    // this.checkEnemiesPosition();
+    this.updatePlayerMovement();
   }
 
   handleShoot(pointer) {
@@ -112,31 +142,61 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.walls);
   }
 
-  create() {
-
-    //add player to the scene
+  createPlayer() {
     this.player = this.physics.add.sprite(32, canvasHeight / 2, 'player');
     this.player.setCollideWorldBounds(true);
     this.player.setScale(playerScale, playerScale);
-    // this.player.setTintFill('0xff0000');
-
-    // Create walls
-    this.createWalls();
-
-    //projectiles
-    this.projectiles = []; // Empty array to hold projectiles
-
-    // Define cursor keys for movement
-    this.cursors = this.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.W,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      left: Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D
-    });
-    this.input.on('pointerdown', this.handleShoot, this);
   }
 
-  update() {
+  createEnemies() {
+    this.enemies = [];
+    const startX = 500;
+    const startY = 300;
+    const width = 200;
+    const height = 200;
+    let moveArea = new Phaser.Geom.Rectangle(startX, startY, width, height);
+    let enemy = this.physics.add.sprite(startX, startY, 'enemy');
+    enemy.setScale(enemyScale, enemyScale);
+    this.enemies.push({ enemy, moveArea });
+    this.changeEnemyDirection();
+    this.time.addEvent(
+      {
+        delay: 2000,
+        callback: this.changeEnemyDirection,
+        callbackScope: this,
+        loop: true
+      }
+    );
+
+  }
+
+  changeEnemyDirection() {
+    for (let i = 0; i < this.enemies.length; i++) {
+      console.log('changing enemy direction');
+      let speed = Phaser.Math.Between(50, 100);  // Random speed between 50 and 100
+      let angle = Phaser.Math.Between(0, 360);  // Random angle
+      let velocity = this.physics.velocityFromAngle(angle, speed);
+      this.enemies[i].enemy.setVelocity(velocity.x, velocity.y);
+    }
+  }
+
+  checkEnemiesPosition() {
+    this.enemies.forEach(enemy => {
+      if (!enemy.moveArea.contains(enemy.enemy.x, enemy.enemy.y)) {
+        console.log('enemy out of bounds');
+        //push the enemy back one step
+        enemy.enemy.x -= enemy.enemy.body.velocity.x / 60;
+        enemy.enemy.y -= enemy.enemy.body.velocity.y / 60;
+        //reverse the velocity
+        enemy.enemy.setVelocity(-enemy.enemy.body.velocity.x, -enemy.enemy.body.velocity.y);
+      }
+      else {
+        console.log('enemy in bounds');
+      }
+    });
+  }
+
+  updatePlayerMovement() {
 
     // Reset player velocity
     this.player.setVelocity(0);
