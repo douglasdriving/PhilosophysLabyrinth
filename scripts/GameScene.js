@@ -1,3 +1,9 @@
+//GameScene.js
+const playerScale = 0.5;
+const wallsScale = 0.5;
+const canvasWidth = 1024;
+const canvasHeight = 768;
+
 class GameScene extends Phaser.Scene {
   constructor() {
     super({ key: 'GameScene' });
@@ -25,7 +31,7 @@ class GameScene extends Phaser.Scene {
 
     this.projectiles.push(projectile);
 
-    const destroyProjectile = () => {
+    const destroyProjectile = (projectile) => {
       projectile.destroy();
 
       // Check if projectile is still valid before removing from the array
@@ -35,8 +41,6 @@ class GameScene extends Phaser.Scene {
           this.projectiles.splice(index, 1);
         }
       }
-
-      console.log('destroyed');
     };
 
     this.physics.add.collider(projectile, this.walls, destroyProjectile, null, this); // Listen for collisions between projectiles and walls
@@ -44,31 +48,64 @@ class GameScene extends Phaser.Scene {
     //remove projectile when it leaves the screen
     projectile.body.onWorldBounds = true; // Enable world bounds event
     projectile.body.setCollideWorldBounds(true); // Set world bounds
-    // projectile.body.world.on('worldbounds', () => { console.log('bounds collision') }, null, this); // Collide with world bounds
     projectile.body.world.on('worldbounds', (body) => {
-      if (body.gameObject === projectile) {
-        projectile.destroy();
-      }
+      destroyProjectile(body.gameObject);
     }, this);
 
   }
 
-
-
   createWalls() {
+
+    let maze = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    ];
+
     // Create walls as immovable bodies
     this.walls = this.physics.add.staticGroup();
-
-    // Add walls to the group
-    this.walls.create(400, 50, 'wall');
-    this.walls.create(400, 550, 'wall');
-    this.walls.create(50, 300, 'wall');
-    this.walls.create(750, 300, 'wall');
+    const TILE_SIZE = 64 * wallsScale;
+    for (let y = 0; y < maze.length; y++) {
+      for (let x = 0; x < maze[y].length; x++) {
+        // if the current cell is a wall, create a wall at that position
+        if (maze[y][x] === 1) {
+          // this.physics.add.sprite(x * TILE_SIZE, y * TILE_SIZE, 'wall');
+          this.walls.create(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2, 'wall');
+        }
+      }
+    }
 
     // Set wall properties
     this.walls.children.iterate((wall) => {
       wall.setBounce(1);
       wall.setImmovable(true);
+      wall.setTintFill(0x808080);
+      if (wallsScale !== 1) {
+        wall.setScale(wallsScale, wallsScale);
+        wall.body.setSize(wall.width * wallsScale, wall.height * wallsScale);
+        wall.body.setOffset((wall.width - wall.body.width) / 2, (wall.height - wall.body.height) / 2);
+      }
     });
 
     // Enable collisions between the walls and projectiles
@@ -78,8 +115,10 @@ class GameScene extends Phaser.Scene {
   create() {
 
     //add player to the scene
-    this.player = this.physics.add.sprite(400, 300, 'player');
+    this.player = this.physics.add.sprite(32, canvasHeight / 2, 'player');
     this.player.setCollideWorldBounds(true);
+    this.player.setScale(playerScale, playerScale);
+    // this.player.setTintFill('0xff0000');
 
     // Create walls
     this.createWalls();
