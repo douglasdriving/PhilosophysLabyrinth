@@ -4,6 +4,7 @@ const wallsScale = 0.5;
 const enemyScale = 0.5;
 const canvasWidth = 1024;
 const canvasHeight = 768;
+const enemySpeed = 75;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -35,8 +36,8 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
-    // this.checkEnemiesPosition();
     this.updatePlayerMovement();
+    this.checkEnemiesPosition();
   }
 
   handleShoot(pointer) {
@@ -150,12 +151,12 @@ class GameScene extends Phaser.Scene {
 
   createEnemies() {
     this.enemies = [];
-    const startX = 500;
+    const startX = 350;
     const startY = 300;
     const width = 200;
     const height = 200;
     let moveArea = new Phaser.Geom.Rectangle(startX, startY, width, height);
-    let enemy = this.physics.add.sprite(startX, startY, 'enemy');
+    let enemy = this.physics.add.sprite(startX + width / 2, startY + height / 2, 'enemy');
     enemy.setScale(enemyScale, enemyScale);
     this.enemies.push({ enemy, moveArea });
     this.changeEnemyDirection();
@@ -168,14 +169,17 @@ class GameScene extends Phaser.Scene {
       }
     );
 
+    //area debug
+    let graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
+    graphics.strokeRectShape(moveArea);
+
   }
 
   changeEnemyDirection() {
     for (let i = 0; i < this.enemies.length; i++) {
       console.log('changing enemy direction');
-      let speed = Phaser.Math.Between(50, 100);  // Random speed between 50 and 100
       let angle = Phaser.Math.Between(0, 360);  // Random angle
-      let velocity = this.physics.velocityFromAngle(angle, speed);
+      let velocity = this.physics.velocityFromAngle(angle, enemySpeed);
       this.enemies[i].enemy.setVelocity(velocity.x, velocity.y);
     }
   }
@@ -184,14 +188,29 @@ class GameScene extends Phaser.Scene {
     this.enemies.forEach(enemy => {
       if (!enemy.moveArea.contains(enemy.enemy.x, enemy.enemy.y)) {
         console.log('enemy out of bounds');
-        //push the enemy back one step
-        enemy.enemy.x -= enemy.enemy.body.velocity.x / 60;
-        enemy.enemy.y -= enemy.enemy.body.velocity.y / 60;
+
+        //push the enemy towards the middle of the move Area
+        let areaCenterX = enemy.moveArea.x + enemy.moveArea.width / 2;
+        let areaCenterY = enemy.moveArea.y + enemy.moveArea.height / 2;
+        let enemyToCenterX = areaCenterX - enemy.enemy.x;
+        let enemyToCenterY = areaCenterY - enemy.enemy.y;
+
+        enemy.enemy.x += enemyToCenterX / (enemy.moveArea.width / 2);
+        enemy.enemy.y += enemyToCenterY / (enemy.moveArea.height / 2);
+
+        // let enemyToCenterAngle = Math.atan2(enemyToCenterY, enemyToCenterX);
+        // let enemyToCenterVelocity = this.physics.velocityFromAngle(enemyToCenterAngle, enemySpeed);
+        // enemy.enemy.setVelocity(enemyToCenterVelocity.x, enemyToCenterVelocity.y);
+
+
+        // //push the enemy back one step
+        // enemy.enemy.x -= enemy.enemy.body.velocity.x * 2/ enemySpeed;
+        // enemy.enemy.y -= enemy.enemy.body.velocity.y * 2/ enemySpeed;
         //reverse the velocity
-        enemy.enemy.setVelocity(-enemy.enemy.body.velocity.x, -enemy.enemy.body.velocity.y);
+        // enemy.enemy.setVelocity(-enemy.enemy.body.velocity.x, -enemy.enemy.body.velocity.y);
       }
       else {
-        console.log('enemy in bounds');
+        // console.log('enemy in bounds');
       }
     });
   }
