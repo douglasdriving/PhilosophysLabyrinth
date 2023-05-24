@@ -3,13 +3,14 @@ const speed = 75;
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
 
-  constructor(scene, x, y, width, height) {
+  constructor(scene, x, y, width, height, enemyGroup) {
 
     const enemyPosX = x + width / 2;
     const enemyPosY = y + height / 2;
 
     super(scene, enemyPosX, enemyPosY, 'enemy');
     this.scene = scene;
+    this.group = enemyGroup;
 
     scene.add.existing(this);
     scene.physics.world.enableBody(this, 0);
@@ -22,7 +23,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     //enable movement
     this.changeDirection();
-    this.scene.time.addEvent(
+    this.turnTimer = this.scene.time.addEvent(
       {
         delay: 2000,
         callback: this.changeDirection,
@@ -53,6 +54,11 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
       this.y += oneStepTowardsCenterY;
       this.setVelocity(oneStepTowardsCenterX * speed, oneStepTowardsCenterY * speed);
     }
+  }
+
+  kill() {
+    this.turnTimer.destroy();
+    this.destroy();
   }
 
 }
