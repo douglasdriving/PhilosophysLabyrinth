@@ -22,7 +22,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     // graphics.strokeRectShape(this.moveArea);
 
     //enable movement
-    this.changeDirection();
+    
     this.turnTimer = this.scene.time.addEvent(
       {
         delay: 2000,

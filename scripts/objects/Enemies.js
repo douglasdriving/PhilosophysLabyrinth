@@ -13,6 +13,7 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group {
     enemyAreas.forEach(area => {
       const enemy = new Enemy(this.scene, area.x, area.y, area.width, area.height, this);
       this.add(enemy);
+      enemy.changeDirection();
     });
 
   }
