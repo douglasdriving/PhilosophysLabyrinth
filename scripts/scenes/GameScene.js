@@ -1,10 +1,11 @@
 //GameScene.js
-const playerScale = 0.5;
 const wallsScale = 0.5;
 const enemyScale = 0.5;
 const canvasWidth = 1024;
 const canvasHeight = 768;
 const enemySpeed = 75;
+
+import Player from '../objects/Player.js';
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -13,8 +14,14 @@ class GameScene extends Phaser.Scene {
 
   create() {
 
-    //player
-    this.createPlayer();
+    // Define cursor keys for movement
+    this.cursors = this.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+    this.input.on('pointerdown', this.handlePointerDown, this);
 
     // Create walls
     this.createWalls();
@@ -25,64 +32,20 @@ class GameScene extends Phaser.Scene {
     // Create projectiles
     this.projectiles = [];
 
-    // Define cursor keys for movement
-    this.cursors = this.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.W,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      left: Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D
-    });
-    this.input.on('pointerdown', this.handleShoot, this);
+    // Player
+    this.player = new Player(this, 32, canvasHeight / 2);
+
+    // Enable collisions
+    this.physics.add.collider(this.player, this.walls);
   }
 
   update() {
-    this.updatePlayerMovement();
+    this.player.update(this.cursors);
     this.checkEnemiesPosition();
   }
 
-  handleShoot(pointer) {
-
-    const angle = Phaser.Math.Angle.Between(
-      this.player.x,
-      this.player.y,
-      pointer.x,
-      pointer.y
-    );
-
-    const velocityX = Math.cos(angle) * 500;
-    const velocityY = Math.sin(angle) * 500;
-
-    const projectile = this.physics.add.sprite(
-      this.player.x,
-      this.player.y,
-      'projectile'
-    );
-
-    projectile.setVelocity(velocityX, velocityY);
-
-    this.projectiles.push(projectile);
-
-    const destroyProjectile = (projectile) => {
-      projectile.destroy();
-
-      // Check if projectile is still valid before removing from the array
-      if (this.projectiles.includes(projectile)) {
-        const index = this.projectiles.indexOf(projectile);
-        if (index > -1) {
-          this.projectiles.splice(index, 1);
-        }
-      }
-    };
-
-    this.physics.add.collider(projectile, this.walls, destroyProjectile, null, this); // Listen for collisions between projectiles and walls
-
-    //remove projectile when it leaves the screen
-    projectile.body.onWorldBounds = true; // Enable world bounds event
-    projectile.body.setCollideWorldBounds(true); // Set world bounds
-    projectile.body.world.on('worldbounds', (body) => {
-      destroyProjectile(body.gameObject);
-    }, this);
-
+  handlePointerDown(pointer) {
+    this.player.handleShoot(pointer);
   }
 
   createWalls() {
@@ -138,15 +101,6 @@ class GameScene extends Phaser.Scene {
         wall.body.setOffset((wall.width - wall.body.width) / 2, (wall.height - wall.body.height) / 2);
       }
     });
-
-    // Enable collisions between the walls and projectiles
-    this.physics.add.collider(this.player, this.walls);
-  }
-
-  createPlayer() {
-    this.player = this.physics.add.sprite(32, canvasHeight / 2, 'player');
-    this.player.setCollideWorldBounds(true);
-    this.player.setScale(playerScale, playerScale);
   }
 
   createEnemy(startX, startY, moveAreaWidth, moveAreaHeight) {
@@ -210,26 +164,6 @@ class GameScene extends Phaser.Scene {
     });
   }
 
-  updatePlayerMovement() {
-
-    // Reset player velocity
-    this.player.setVelocity(0);
-
-    // Horizontal movement
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-200);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(200);
-    }
-
-    // Vertical movement
-    if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-200);
-    } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(200);
-    }
-
-  }
 }
 
 export default GameScene;
