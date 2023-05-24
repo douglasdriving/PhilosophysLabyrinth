@@ -149,16 +149,29 @@ class GameScene extends Phaser.Scene {
     this.player.setScale(playerScale, playerScale);
   }
 
-  createEnemies() {
-    this.enemies = [];
-    const startX = 350;
-    const startY = 300;
-    const width = 200;
-    const height = 200;
-    let moveArea = new Phaser.Geom.Rectangle(startX, startY, width, height);
-    let enemy = this.physics.add.sprite(startX + width / 2, startY + height / 2, 'enemy');
+  createEnemy(startX, startY, moveAreaWidth, moveAreaHeight) {
+    let moveArea = new Phaser.Geom.Rectangle(startX, startY, moveAreaWidth, moveAreaHeight);
+    let enemy = this.physics.add.sprite(startX + moveAreaWidth / 2, startY + moveAreaHeight / 2, 'enemy');
     enemy.setScale(enemyScale, enemyScale);
     this.enemies.push({ enemy, moveArea });
+
+    //area debug
+    // let graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
+    // graphics.strokeRectShape(moveArea);
+
+  }
+
+  createEnemies() {
+    this.enemies = [];
+
+    this.createEnemy(350, 300, 200, 200);
+    this.createEnemy(150, 50, 300, 100);
+    this.createEnemy(140, 500, 100, 200);
+    this.createEnemy(450, 600, 400, 120);
+    this.createEnemy(670, 250, 150, 300);
+    this.createEnemy(560, 50, 150, 150);
+    this.createEnemy(750, 50, 220, 100);
+
     this.changeEnemyDirection();
     this.time.addEvent(
       {
@@ -168,49 +181,31 @@ class GameScene extends Phaser.Scene {
         loop: true
       }
     );
-
-    //area debug
-    let graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
-    graphics.strokeRectShape(moveArea);
-
   }
 
   changeEnemyDirection() {
     for (let i = 0; i < this.enemies.length; i++) {
-      console.log('changing enemy direction');
+      const enemy = this.enemies[i].enemy;
       let angle = Phaser.Math.Between(0, 360);  // Random angle
       let velocity = this.physics.velocityFromAngle(angle, enemySpeed);
-      this.enemies[i].enemy.setVelocity(velocity.x, velocity.y);
+      enemy.setVelocity(velocity.x, velocity.y);
     }
   }
 
   checkEnemiesPosition() {
     this.enemies.forEach(enemy => {
       if (!enemy.moveArea.contains(enemy.enemy.x, enemy.enemy.y)) {
-        console.log('enemy out of bounds');
 
-        //push the enemy towards the middle of the move Area
-        let areaCenterX = enemy.moveArea.x + enemy.moveArea.width / 2;
-        let areaCenterY = enemy.moveArea.y + enemy.moveArea.height / 2;
-        let enemyToCenterX = areaCenterX - enemy.enemy.x;
-        let enemyToCenterY = areaCenterY - enemy.enemy.y;
+        const areaCenterX = enemy.moveArea.x + enemy.moveArea.width / 2;
+        const areaCenterY = enemy.moveArea.y + enemy.moveArea.height / 2;
+        const enemyToCenterX = areaCenterX - enemy.enemy.x;
+        const enemyToCenterY = areaCenterY - enemy.enemy.y;
+        const oneStepTowardsCenterX = enemyToCenterX / (enemy.moveArea.width / 2);
+        const oneStepTowardsCenterY = enemyToCenterY / (enemy.moveArea.height / 2);
 
-        enemy.enemy.x += enemyToCenterX / (enemy.moveArea.width / 2);
-        enemy.enemy.y += enemyToCenterY / (enemy.moveArea.height / 2);
-
-        // let enemyToCenterAngle = Math.atan2(enemyToCenterY, enemyToCenterX);
-        // let enemyToCenterVelocity = this.physics.velocityFromAngle(enemyToCenterAngle, enemySpeed);
-        // enemy.enemy.setVelocity(enemyToCenterVelocity.x, enemyToCenterVelocity.y);
-
-
-        // //push the enemy back one step
-        // enemy.enemy.x -= enemy.enemy.body.velocity.x * 2/ enemySpeed;
-        // enemy.enemy.y -= enemy.enemy.body.velocity.y * 2/ enemySpeed;
-        //reverse the velocity
-        // enemy.enemy.setVelocity(-enemy.enemy.body.velocity.x, -enemy.enemy.body.velocity.y);
-      }
-      else {
-        // console.log('enemy in bounds');
+        enemy.enemy.x += oneStepTowardsCenterX;
+        enemy.enemy.y += oneStepTowardsCenterY;
+        enemy.enemy.setVelocity(oneStepTowardsCenterX * enemySpeed, oneStepTowardsCenterY * enemySpeed);
       }
     });
   }
