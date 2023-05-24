@@ -18,39 +18,15 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
-
-    // Define cursor keys for movement
-    this.cursors = this.input.keyboard.addKeys({
-      up: Phaser.Input.Keyboard.KeyCodes.W,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      left: Phaser.Input.Keyboard.KeyCodes.A,
-      right: Phaser.Input.Keyboard.KeyCodes.D
-    });
-    this.input.on('pointerdown', this.handlePointerDown, this);
-
-    // Create walls
     this.walls = new Walls(this, level);
-
-    // Create enemies
     this.createEnemies();
-
-    // Create projectiles
-    this.projectiles = [];
-
-    // Player
     this.player = new Player(this, 32, canvasHeight / 2);
-
-    // Enable collisions
     this.physics.add.collider(this.player, this.walls);
   }
 
   update() {
-    this.player.update(this.cursors);
+    this.player.update();
     this.checkEnemiesPosition();
-  }
-
-  handlePointerDown(pointer) {
-    this.player.handleShoot(pointer);
   }
 
   createEnemy(startX, startY, moveAreaWidth, moveAreaHeight) {

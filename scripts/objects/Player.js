@@ -20,27 +20,35 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
     this.setScale(playerScale, playerScale);
 
+    //Player Controls
+    this.cursors = scene.input.keyboard.addKeys({
+      up: Phaser.Input.Keyboard.KeyCodes.W,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D
+    });
+    scene.input.on('pointerdown', this.handleShoot, this);
   }
 
-  update(cursors) {
-    this.updateMovement(cursors);
+  update() {
+    this.updateMovement();
   }
 
-  updateMovement(cursors) {
+  updateMovement() {
     // Reset player velocity
     this.setVelocity(0);
 
     // Horizontal movement
-    if (cursors.left.isDown) {
+    if (this.cursors.left.isDown) {
       this.setVelocityX(-200);
-    } else if (cursors.right.isDown) {
+    } else if (this.cursors.right.isDown) {
       this.setVelocityX(200);
     }
 
     // Vertical movement  
-    if (cursors.up.isDown) {
+    if (this.cursors.up.isDown) {
       this.setVelocityY(-200);
-    } else if (cursors.down.isDown) {
+    } else if (this.cursors.down.isDown) {
       this.setVelocityY(200);
     }
   }
