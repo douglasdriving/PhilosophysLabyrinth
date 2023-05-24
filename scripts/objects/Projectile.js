@@ -14,8 +14,9 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
     //set velocity
     this.setVelocity(velX, velY);
 
-    //wall collider
+    //colliders
     scene.physics.add.collider(this, this.scene.walls, this.destroy, null, this);
+    // scene.physics.add.collider(this, this.scene.enemies, this.destroy, null, this);
 
     //remove projectile when it leaves the screen
     this.body.onWorldBounds = true; // Enable world bounds event
