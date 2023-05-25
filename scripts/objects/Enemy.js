@@ -3,7 +3,7 @@ const speed = 75;
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
 
-  constructor(scene, x, y, width, height, enemyGroup) {
+  constructor(scene, x, y, width, height, enemyGroup, color) {
 
     const enemyPosX = x + width / 2;
     const enemyPosY = y + height / 2;
@@ -22,7 +22,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     // graphics.strokeRectShape(this.moveArea);
 
     //enable movement
-    
+
     this.turnTimer = this.scene.time.addEvent(
       {
         delay: 2000,
@@ -31,6 +31,8 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         loop: true
       }
     );
+
+    this.setTintFill(color);
 
   }
 
@@ -57,6 +59,11 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   kill() {
+    if (this.group.children.entries.length <= 1) {
+      console.log('cleared');
+      this.scene.cleared();
+    }
+
     this.turnTimer.destroy();
     this.destroy();
   }

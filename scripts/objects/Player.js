@@ -5,7 +5,7 @@ const playerScale = 0.5;
 
 class Player extends Phaser.Physics.Arcade.Sprite {
 
-  constructor(scene, x, y) {
+  constructor(scene, x, y, color) {
 
     super(scene, x, y, 'player');
     this.scene = scene;
@@ -28,6 +28,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
       right: Phaser.Input.Keyboard.KeyCodes.D
     });
     scene.input.on('pointerdown', this.handleShoot, this);
+
+    //color
+    this.setTintFill(color);
   }
 
   update() {

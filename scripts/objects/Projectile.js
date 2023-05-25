@@ -1,6 +1,6 @@
 class Projectile extends Phaser.Physics.Arcade.Sprite {
 
-  constructor(scene, x, y) {
+  constructor(scene, x, y, color) {
 
     super(scene, x, y, 'projectile');
     this.scene = scene;
@@ -22,6 +22,9 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
     this.body.onWorldBounds = true; // Enable world bounds event
     this.body.setCollideWorldBounds(true); // Set world bounds
     this.body.world.on('worldbounds', this.destroy, this);
+
+    //color
+    this.setTint(color);
   }
 
 }
