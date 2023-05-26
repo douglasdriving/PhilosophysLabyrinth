@@ -6,7 +6,6 @@ class EnemyGroup extends Phaser.Physics.Arcade.Group {
     super(scene.physics.world, scene);
     this.scene = scene;
     this.enemyColor = enemyColor;
-    this.createEnemies(enemyAreas);
   }
 
   createEnemies(enemyAreas) {

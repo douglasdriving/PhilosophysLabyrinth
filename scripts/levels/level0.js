@@ -53,7 +53,26 @@ const level = {
       fontSize: '20px',
       fill: '#000',
     }
-  ]
+  ],
+  images: [
+    {
+      image: 'wasdIcon',
+      x: 240,
+      y: 180,
+    },
+    {
+      image: 'mouseLeftIcon',
+      x: 240,
+      y: 590,
+    }
+  ],
+  exits: [{
+    x: 980,
+    y: 80,
+    width: 50,
+    height: 200,
+    nextLevel: 1
+  }]
 };
 
 export default level;

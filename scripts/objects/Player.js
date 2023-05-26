@@ -68,7 +68,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     const velX = Math.cos(angle) * 500;
     const velY = Math.sin(angle) * 500;
 
-    // new Projectile(this.scene, this.x, this.y, velX, velY);
+    // console.log(this.scene);
     this.scene.projectileGroup.createProjectile(this.x, this.y, velX, velY);
 
   }

@@ -33,7 +33,17 @@ const level = {
     { x: 670, y: 250, width: 150, height: 300 },
     { x: 560, y: 50, width: 150, height: 150 },
     { x: 750, y: 50, width: 220, height: 100 }
-  ]
+  ],
+  colorScheme: {
+    background: 0xD3D3D3,
+    wall: 0x808080,
+    player: 0xFF7F50,
+    enemy: 0x9370DB,
+    projectile: 0x20B2AA,
+  },
+  playerStart: { x: 100, y: (768 / 2) },
+  textOnClear: [],
+  images: []
 };
 
 export default level;
