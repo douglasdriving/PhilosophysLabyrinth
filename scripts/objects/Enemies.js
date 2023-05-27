@@ -2,16 +2,15 @@ import Enemy from "./Enemy.js";
 
 class EnemyGroup extends Phaser.Physics.Arcade.Group {
 
-  constructor(scene, enemyAreas, enemyColor) {
+  constructor(scene) {
     super(scene.physics.world, scene);
     this.scene = scene;
-    this.enemyColor = enemyColor;
   }
 
-  createEnemies(enemyAreas) {
+  createEnemies(enemyAreas, enemyColor) {
 
     enemyAreas.forEach(area => {
-      const enemy = new Enemy(this.scene, area.x, area.y, area.width, area.height, this, this.enemyColor);
+      const enemy = new Enemy(this.scene, area.x, area.y, area.width, area.height, this, enemyColor);
       this.add(enemy);
       enemy.changeDirection();
     });

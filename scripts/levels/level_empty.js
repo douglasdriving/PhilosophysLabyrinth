@@ -25,8 +25,18 @@ const level = {
     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
   ],
-  enemyAreas: [
-  ]
+  enemyAreas: [],
+  colorScheme: {
+    background: 0xD3D3D3,
+    wall: 0x808080,
+    player: 0xFF7F50,
+    enemy: 0x9370DB,
+    projectile: 0x20B2AA,
+  },
+  playerStart: { x: 150, y: (768 / 2) },
+  textOnClear: [],
+  images: [],
+  exits: []
 };
 
 export default level;

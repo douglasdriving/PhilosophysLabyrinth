@@ -1,14 +1,16 @@
 const scale = 0.5;
 const speed = 75;
+const showDebug = false;
 
 class Enemy extends Phaser.Physics.Arcade.Sprite {
 
   constructor(scene, x, y, width, height, enemyGroup, color) {
 
-    const enemyPosX = x + width / 2;
-    const enemyPosY = y + height / 2;
+    //random pos in area
+    const randomX = Phaser.Math.Between(x, x + width);
+    const randomY = Phaser.Math.Between(y, y + height);
 
-    super(scene, enemyPosX, enemyPosY, 'enemy');
+    super(scene, randomX, randomY, 'enemy');
     this.scene = scene;
     this.group = enemyGroup;
 
@@ -17,12 +19,21 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.setScale(scale, scale);
 
     //area
+    this.createMoveArea(x, y, width, height, scene);
+    this.enambleMovement();
+    this.setTintFill(color);
+
+  }
+
+  createMoveArea(x, y, width, height, scene) {
     this.moveArea = new Phaser.Geom.Rectangle(x, y, width, height);
-    // let graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
-    // graphics.strokeRectShape(this.moveArea);
+    if (showDebug) {
+      let graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
+      graphics.strokeRectShape(this.moveArea);
+    }
+  }
 
-    //enable movement
-
+  enambleMovement() {
     this.turnTimer = this.scene.time.addEvent(
       {
         delay: 2000,
@@ -31,9 +42,6 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         loop: true
       }
     );
-
-    this.setTintFill(color);
-
   }
 
   changeDirection() {

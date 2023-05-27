@@ -31,23 +31,23 @@ const level = {
     { x: 650, y: 300, width: 250, height: 200 },
   ],
   colorScheme: {
-    background: 0xD3D3D3,
-    wall: 0x808080,
-    player: 0xFF7F50,
-    enemy: 0x9370DB,
-    projectile: 0x20B2AA,
+    background: 0xA0917A,
+    wall: 0x6C5A41,
+    player: 0xD4D4D4,
+    enemy: 0x282828,
+    projectile: 0xFFC610,
   },
   playerStart: { x: 150, y: (768 / 2) },
   textOnClear: [
     {
-      text: 'desire',
+      text: 'duty',
       x: 940,
       y: 160,
       fontSize: '20px',
       fill: '#000',
     },
     {
-      text: 'duty',
+      text: 'desire',
       x: 940,
       y: 600,
       fontSize: '20px',
@@ -66,13 +66,22 @@ const level = {
       y: 590,
     }
   ],
-  exits: [{
-    x: 980,
-    y: 80,
-    width: 50,
-    height: 200,
-    nextLevel: 1
-  }]
+  exits: [
+    {
+      x: 980,
+      y: 80,
+      width: 50,
+      height: 200,
+      nextLevel: 1
+    },
+    {
+      x: 980,
+      y: 480,
+      width: 50,
+      height: 200,
+      nextLevel: 2
+    }
+  ]
 };
 
 export default level;

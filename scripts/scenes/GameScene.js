@@ -3,8 +3,11 @@ import Player from '../objects/Player.js';
 import WallGroup from '../objects/WallGroup.js';
 import level0 from '../levels/level0.js'
 import level1 from '../levels/level1.js'
+import level2 from '../levels/level2.js';
 import EnemyGroup from '../objects/Enemies.js';
 import ProjectileGroup from '../objects/ProjectileGroup.js';
+
+const showDebug = false;
 
 class GameScene extends Phaser.Scene {
   constructor() {
@@ -13,7 +16,7 @@ class GameScene extends Phaser.Scene {
 
   //creating the scene
   create() {
-    this.levels = [level0, level1];
+    this.levels = [level0, level1, level2];
     this.currentLevel = 0;
     this.texts = [];
     this.createObjects(this.levels[this.currentLevel]);
@@ -26,7 +29,7 @@ class GameScene extends Phaser.Scene {
     this.enemyGroup = new EnemyGroup(this, level.enemyAreas, level.colorScheme.enemy);
     this.player = new Player(this, level.playerStart.x, level.playerStart.y, level.colorScheme.player);
     this.images = [];
-    this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
+    if (showDebug) this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
     this.exits = [];
   }
 
@@ -84,7 +87,7 @@ class GameScene extends Phaser.Scene {
 
   loadObjects(level) {
     this.wallGroup.createWalls(level.maze, 0.5, level.colorScheme.wall);
-    this.enemyGroup.createEnemies(level.enemyAreas);
+    this.enemyGroup.createEnemies(level.enemyAreas, level.colorScheme.enemy);
     this.player.x = level.playerStart.x;
     this.player.y = level.playerStart.y;
     level.images.forEach((image) => {
@@ -107,8 +110,7 @@ class GameScene extends Phaser.Scene {
     if (level.exits)
       level.exits.forEach((exit) => {
         let exitRect = new Phaser.Geom.Rectangle(exit.x, exit.y, exit.width, exit.height);
-        this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00ff00 }, fillStyle: { alpha: 0.1 } });
-        this.graphics.strokeRectShape(exitRect);
+        if (showDebug) this.graphics.strokeRectShape(exitRect);
         this.exits.push({
           area: exitRect,
           nextLevel: exit.nextLevel
@@ -124,7 +126,7 @@ class GameScene extends Phaser.Scene {
     this.unloadGroup(this.projectileGroup);
     this.unloadArray(this.images);
     this.unloadArray(this.texts);
-    this.graphics.clear();
+    if (showDebug) this.graphics.clear();
     this.exist = [];
     this.unloadColliders();
 
